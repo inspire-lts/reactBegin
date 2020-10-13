@@ -1,11 +1,25 @@
 import React,{Component} from 'react'
 import login from './img/logo.png'
-import { Form, Input, Button, Checkbox} from 'antd';
+import { Form, Input, Button, message} from 'antd';
+import {Redirect} from 'react-router-dom'
+import {reqLogin} from '../../api/index.js'
 import './css/login.less'
+import {connect} from 'react-redux'
+import {createSaveUserInfo} from '../../redux/actions/login_action'
 
-export default class Login extends Component{
+
+
+class Login extends Component{
+
+  componentDidMount() {
+    console.log(this.props)
+  }
  
   render(){
+    const {isLogin} = this.props
+    if (isLogin) {
+      return <Redirect to='/admin'></Redirect>
+    }
     // 样式
     const layout = {
       labelCol: {
@@ -22,8 +36,19 @@ export default class Login extends Component{
       },
     };
     // 成功回调
-    const onFinish = (values) => {
-      console.log('Success:', values);
+    const onFinish = async (values) => {
+        const {username, password} = values
+        console.log(values)
+        const result = await reqLogin(username, password)
+        const {status, msg, data} = result
+        if (status === 0){  // 密码正确
+            console.log(data)
+            this.props.saveUserInfo(data)
+            this.props.history.replace('/admin')
+        }else {
+          message.warning(msg)
+        }
+          
     };
     // 失败回调
     const onFinishFailed = (errorInfo) => {
@@ -72,9 +97,12 @@ export default class Login extends Component{
               name="password"
               rules={[
                 {
+                  required: true,
+                  message: '请输入用户名',
+                },
+                {
                   validator: (_, value) => {
-                    if(!value) return Promise.reject("密码不能为空")
-                    else if(value.length >12) return Promise.reject("密码必须小于12位")
+                    if(value.length >12) return Promise.reject("密码必须小于12位")
                     else if(value.length < 4) return Promise.reject("密码必须大于4位")
                     return Promise.resolve()
                   }
@@ -83,11 +111,6 @@ export default class Login extends Component{
             >
               <Input.Password />
             </Form.Item>
-
-            <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-              <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
             <Form.Item {...tailLayout}> 
               <Button type="primary" htmlType="submit">
                 Submit
@@ -99,3 +122,10 @@ export default class Login extends Component{
     )
   }
 }
+
+export default connect(
+  state => ({isLogin: state.userInfo.isLogin}),
+  {
+    saveUserInfo: createSaveUserInfo,
+  }
+)(Login)
