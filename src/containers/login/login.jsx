@@ -1,5 +1,5 @@
 import React,{Component} from 'react'
-import login from './img/logo.png'
+import login from '../../static/imgs/logo.png'
 import { Form, Input, Button, message} from 'antd';
 import {Redirect} from 'react-router-dom'
 import {reqLogin} from '../../api/index.js'
