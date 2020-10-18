@@ -18,7 +18,7 @@ class Login extends Component{
   render(){
     const {isLogin} = this.props
     if (isLogin) {
-      return <Redirect to='/admin'></Redirect>
+      return <Redirect to='/admin/home'></Redirect>
     }
     // 样式
     const layout = {
@@ -38,13 +38,12 @@ class Login extends Component{
     // 成功回调
     const onFinish = async (values) => {
         const {username, password} = values
-        console.log(values)
         const result = await reqLogin(username, password)
         const {status, msg, data} = result
         if (status === 0){  // 密码正确
             console.log(data)
             this.props.saveUserInfo(data)
-            this.props.history.replace('/admin')
+            this.props.history.replace('/admin/home')
         }else {
           message.warning(msg)
         }
@@ -89,7 +88,7 @@ class Login extends Component{
               
               ]}
             >
-              <Input/>
+              <Input />
             </Form.Item>
 
             <Form.Item
@@ -115,7 +114,7 @@ class Login extends Component{
               <Button type="primary" htmlType="submit">
                 Submit
               </Button>
-      </Form.Item>
+            </Form.Item>
           </Form>
         </section>
       </div>

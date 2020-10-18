@@ -22,3 +22,16 @@ export const reqWeather = () => {
           })
     })
 }
+
+export const reqAddCategory = ({categoryName}) => myAxiso.post(`${BASE_URL}/manage/category/add`, {categoryName})
+
+export const reqUpdateCategory = ({categoryId, categoryName}) => myAxiso.post(`${BASE_URL}/manage/category/update`, {categoryId, categoryName})
+
+// 请求商品分页列表
+export const reqPruductList = (pageNum, pageSize) => myAxiso.get(`${BASE_URL}/manage/product/list`, {params: {pageNum, pageSize}})
+
+// 请求更新商品在售状态
+export const reqUpdateProdStatus = (productId, status) =>  myAxiso.post(`${BASE_URL}/manage/product/updateStatus`, {productId, status})
+
+// 搜索商品分页列表
+export const reqSearchProduct = (pageNum, pageSize, searchType, keyWord) =>  myAxiso.get(`${BASE_URL}/manage/product/search`, {params: {pageNum, pageSize, [searchType]:keyWord}})

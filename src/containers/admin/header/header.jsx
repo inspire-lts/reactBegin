@@ -1,27 +1,34 @@
 import React,{Component} from 'react'
+
 import {withRouter} from 'react-router-dom'
 import {Button} from 'antd'
 import dayjs from 'dayjs'
-import './header.less'
 import {connect} from 'react-redux'
+
+
 import {createDeleUserInfo} from '../../../redux/actions/login_action'
 import {reqWeather} from '../../../api/index'
-
+import menuList from '../../../config/menu_config'
+import './header.less'
 
 @connect(
-  state =>({userInfo: state.userInfo}),
+  state =>({userInfo: state.userInfo,
+            title: state.title}),
   {deleteUser: createDeleUserInfo}
 )
 @withRouter  // 在非路由组建中使用路由组件的api
 class Header extends Component{
   state = {
     date: dayjs().format('YYYY年 MM月DD日 HH:mm:ss'),
-    weather: {}
+    weather: {},
+    title: ''
   }
+
   getWeather = async() => {
     const weather = await reqWeather()
     this.setState({weather})
   }
+
   componentDidMount() {
     // 更新时间
     this.timeID = setInterval(() => {
@@ -29,6 +36,8 @@ class Header extends Component{
     }, 1000)
     // 发送天气请求
     this.getWeather()
+
+    this.getTitle()  //产生bug 点一个菜单栏多个菜单都会响应
   }
 
   componentWillUnmount(){
@@ -36,9 +45,31 @@ class Header extends Component{
     clearInterval(this.timeID)
   }
 
+  // 展示当前菜单名称
+  getTitle = () => {
+    let {pathname} = this.props.location
+    let pathKey = pathname.split('/').reverse()[0] 
+    if(pathname.indexOf('product') !== -1)  pathKey = 'product'
+    let title = ''
+
+    menuList.forEach(item => {
+      if(item.children instanceof Array) {
+        let tmp = item.children.find(citem => {
+          return citem.key === pathKey 
+        })
+        if (tmp) title = tmp.title
+      }else {
+        if (pathKey === item.key) title = item.title
+      }
+    })
+
+    this.setState({title})
+  }
+
   logout = () => {
     this.props.deleteUser()
   }
+  
   render(){
     const {user} = this.props.userInfo
     const {weather} = this.state
@@ -50,10 +81,9 @@ class Header extends Component{
         </div>
         <div className='header-bottom'>
           <div className='header-bottom-left'>
-            {this.props.location.pathname}
+            {this.props.title || this.state.title}
           </div>
           <div className='header-bottom-right'>
-            {this.state.date}
             <img src={weather.dayPictureUrl} alt="天气"/>
             {weather.weather} 温度： {weather.temperature}
           </div>

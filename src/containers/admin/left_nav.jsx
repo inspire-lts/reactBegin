@@ -1,25 +1,49 @@
 import React, { Component } from 'react'
-import { Menu, Button } from 'antd';
-import {Link} from 'react-router-dom'
-import {
-  AppstoreOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  PieChartOutlined,
-  DesktopOutlined,
-  ContainerOutlined,
-  MailOutlined,
-  HomeFilled,
-} from '@ant-design/icons';
+
+import { Menu} from 'antd';
+import {Link, withRouter} from 'react-router-dom'
+
+import {connect} from 'react-redux'
+
+import menuList from '../../config/menu_config.js'
+import {createSaveTitleActon} from '../../redux/actions/menu_action.js'
 import logo from '../../static/imgs/logo.png'
 import './left_nav.less'
 
-const { SubMenu } = Menu;
+const { SubMenu, Item } = Menu;
 
-export default class LeftNav extends React.Component {
+@connect(
+  state => ({}),
+  {
+    saveTitle: createSaveTitleActon
+  }
+)
+@withRouter
+class LeftNav extends Component {
 
-  
+    
+    createMenu = (tartget) => {
+      return tartget.map((item) => {
+        if (!item.children) {
+          return (
+            <Item key={item.key} onClick={() => {this.props.saveTitle(item.title)}} >
+              <Link to={item.path}>
+                <span>{item.title}</span>
+              </Link>
+            </Item>
+          )
+        }else {
+          return (
+            <SubMenu key={item.key} title = {item.title}>
+              {this.createMenu(item.children)}
+            </SubMenu>
+          )
+        }
+      })
+    }
+
     render() {
+      let {pathname} = this.props.location
       return (
         <div>
             <header className="nav-header">
@@ -27,38 +51,18 @@ export default class LeftNav extends React.Component {
                 <h1>商品管理系统</h1>
             </header>
           <Menu
-            defaultSelectedKeys={'home'}
+            defaultSelectedKeys={pathname.indexOf('product') !== -1 ? 'product' : pathname.split('/').reverse()[0]}
+            defaultOpenKeys={pathname.split('/').splice(2)}
             mode="inline"
             theme="dark"
           >
-            <Menu.Item key="home" icon={<HomeFilled />}>
-                <Link to='/admin/home'>
-                    首页
-                </Link>
-            </Menu.Item>
-            <SubMenu key="prod_about" icon={<AppstoreOutlined />} title="商品">
-              <Menu.Item key="5">
-                  <Link to='/admin/prod_about/category'>
-                      分类管理
-                  </Link>
-                  </Menu.Item>
-              <Menu.Item key="6">
-                 <Link to='/admin/prod_about/product'>
-                     商品管理
-                 </Link>             
-              </Menu.Item>
-              
-            </SubMenu>
-            <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Navigation Two">
-              <Menu.Item key="9">Option 9</Menu.Item>
-              <Menu.Item key="10">Option 10</Menu.Item>
-              <SubMenu key="sub3" title="Submenu">
-                <Menu.Item key="11">Option 11</Menu.Item>
-                <Menu.Item key="12">Option 12</Menu.Item>
-              </SubMenu>
-            </SubMenu>
+            {
+              this.createMenu(menuList)
+            }
           </Menu>
         </div>
       );
     }
   }
+
+  export default LeftNav

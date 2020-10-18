@@ -13,14 +13,14 @@ import Pie from '../pie/pie'
 import Product from '../product/product'
 import Role from '../role/role'
 import User from '../user/user'
+import AddUpdate from '../product/add_update'
+import Detail from '../product/detail'
 import {reqCategoryList} from '../../api/index'
 import LeftNav from './left_nav'
 const {Footer, Sider, Content } = Layout;
 
 class Admin extends Component{
-  componentDidMount() {
-    console.log(this.props)
-  }
+ 
 
   demo = async() => {
     let result = await reqCategoryList()
@@ -34,7 +34,6 @@ class Admin extends Component{
         console.log("没有登录")
         return <Redirect to='/login'/>
       }else {
-        console.log('登录了')
         return (
           
             <Layout className="admin">
@@ -47,10 +46,13 @@ class Admin extends Component{
                   <Switch>
                     <Route path='/admin/home' component={Home}></Route>
                     <Route path='/admin/prod_about/category' component={Category}></Route>
-                    <Route path='/admin/prod_about/product' component={Product}></Route>
+                    <Route path='/admin/prod_about/product' component={Product} exact></Route>
+                    <Route path='/admin/prod_about/product/detail/:id' component={Detail}></Route>
+                    <Route path='/admin/prod_about/product/addUpdate' component={AddUpdate} exact></Route>
+                    <Route path='/admin/prod_about/product/addUpdate/:id' component={AddUpdate}></Route>
                     <Route path ='/admin/user' component={User}></Route>
                     <Route path = '/admin/role' component={Role}></Route>
-                    <Route path = '/admin/bar' component={Bar}></Route>
+                    <Route path = '/admin/charts/bar' component={Bar}></Route>
                     <Route path = '/admin/charts/line' component={Line}></Route>
                     <Route path = '/admin/charts/pie' component={Pie}></Route>
                     <Redirect to='/admin/home'></Redirect> 

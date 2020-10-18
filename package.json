@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.2.2",
     "@babel/plugin-proposal-decorators": "^7.10.5",
     "@craco/craco": "^5.7.0",
