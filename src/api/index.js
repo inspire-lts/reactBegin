@@ -35,3 +35,5 @@ export const reqUpdateProdStatus = (productId, status) =>  myAxiso.post(`${BASE_
 
 // 搜索商品分页列表
 export const reqSearchProduct = (pageNum, pageSize, searchType, keyWord) =>  myAxiso.get(`${BASE_URL}/manage/product/search`, {params: {pageNum, pageSize, [searchType]:keyWord}})
+
+export const reqProdById = (productId) =>  myAxiso.get(`${BASE_URL}/manage/product/info`, {params: {productId}})

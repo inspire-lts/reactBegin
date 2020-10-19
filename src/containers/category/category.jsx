@@ -2,10 +2,17 @@ import React,{Component} from 'react'
 
 import {Card, Button, Table, message, Modal, Form, Input} from 'antd'
 import {PlusOutlined} from '@ant-design/icons'
+import {connect} from 'react-redux'
 
 import {reqCategoryList, reqAddCategory, reqUpdateCategory} from '../../api/index'
 import {PANGE_SIZE} from '../../config/config'
-export default class Category extends Component{
+import {createSaveCategoryAction} from '../../redux/actions/category_action'
+
+@connect(
+  state => ({}),
+  {saveCategory: createSaveCategoryAction}
+)
+ class Category extends Component{
 
   formRef = React.createRef();
 
@@ -22,7 +29,11 @@ export default class Category extends Component{
     let result = await reqCategoryList()
     this.setState({isLoading: false})
     const {status, data, msg} = result
-    if(status === 0) this.setState({categoryList: data.reverse()})
+    if(status === 0) {
+      this.setState({categoryList: data.reverse()})
+      // 把商品的分类信息放入redux
+      this.props.saveCategory(data)
+    }
     else message.error(msg, 1)
   }
   componentDidMount() {
@@ -153,3 +164,5 @@ export default class Category extends Component{
     )
   }
 }
+
+export default Category
