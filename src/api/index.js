@@ -37,3 +37,9 @@ export const reqUpdateProdStatus = (productId, status) =>  myAxiso.post(`${BASE_
 export const reqSearchProduct = (pageNum, pageSize, searchType, keyWord) =>  myAxiso.get(`${BASE_URL}/manage/product/search`, {params: {pageNum, pageSize, [searchType]:keyWord}})
 
 export const reqProdById = (productId) =>  myAxiso.get(`${BASE_URL}/manage/product/info`, {params: {productId}})
+
+// 请求删除图片
+export const reqDeletePicture = (name) => myAxiso.post(`${BASE_URL}/manage/img/delete`, {name})
+
+// 请求添加商品
+export const reqAddProduct = (productObj) => myAxiso.post(`${BASE_URL}/manage/product/add`, {...productObj})

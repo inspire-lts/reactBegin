@@ -5,6 +5,8 @@ import {ArrowLeftOutlined} from '@ant-design/icons'
 import {connect} from 'react-redux'
 
 import {reqCategoryList} from '../../api/index'
+import PictureWall from './picture_wall'
+import RichTextEditor  from './rich_text_editor'
 const {Option} = Select
 
 @connect(
@@ -30,6 +32,14 @@ class AddUpdate extends Component{
 
   }
 
+  sendPictureThis = (ref) => {
+    this.child = ref
+  }
+
+  sendEditorThis = (ref) => {
+    this.editor = ref
+  }
+
   render(){
     const layout = {
       labelCol: { span: 2 },
@@ -40,6 +50,8 @@ class AddUpdate extends Component{
     };
     
       const onFinish = values => {
+        console.log(this.child.getImgArr())
+        console.log(this.editor.getRichText())
         console.log('Success:', values);
       };
     
@@ -84,22 +96,22 @@ class AddUpdate extends Component{
               label="商品分类"
               name='category'
               >
-              <Select defaultValue="categoryId">
-                <Option value='category'>请选择分类</Option>
+              <Select >
                 {
                   this.state.categoryList.map(item => <Option value={item._id} key={item._id}>{item.name}</Option>)
                 }
               </Select>
             </Form.Item>
             <Form.Item
-              label="商品图片"
-              name="picture">
-                <Input/>
+              label="商品图片">
+                <PictureWall pictureWall={this.sendPictureThis}/>
             </Form.Item>
             <Form.Item
               label="商品详情"
-              name="detail">
-                <Input/>
+              name="detail"
+              labelCol ={{ span: 2 }}
+              wrapperCol={{ span: 15 }}>
+                <RichTextEditor richEditor={this.sendEditorThis}/>
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Button type="primary" htmlType="submit">
