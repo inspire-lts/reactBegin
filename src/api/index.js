@@ -43,3 +43,13 @@ export const reqDeletePicture = (name) => myAxiso.post(`${BASE_URL}/manage/img/d
 
 // 请求添加商品
 export const reqAddProduct = (productObj) => myAxiso.post(`${BASE_URL}/manage/product/add`, {...productObj})
+
+// 请求更新商品
+export const reqUpdateProduct = (productObj) => myAxiso.post(`${BASE_URL}/manage/product/update`, {...productObj})
+
+// 请求所有角色列表
+export const reqRoleList = () => myAxiso.get(`${BASE_URL}/manage/role/list`)
+
+// 请求添加角色
+export const reqAddRole = (roleName) => myAxiso.post(`${BASE_URL}/manage/role/add`, {...roleName})
+
