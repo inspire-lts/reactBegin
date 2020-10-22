@@ -53,3 +53,15 @@ export const reqRoleList = () => myAxiso.get(`${BASE_URL}/manage/role/list`)
 // 请求添加角色
 export const reqAddRole = (roleName) => myAxiso.post(`${BASE_URL}/manage/role/add`, {...roleName})
 
+// 给请求角色授权
+export const reqAuthRole = (roleObj) => myAxiso.post(`${BASE_URL}/manage/role/update`, {...roleObj, auth_time: Date.now()})
+
+// 请求获取所有用户列表（同时携带着角色列表)
+export const reqUserList = () =>  myAxiso.get(`${BASE_URL}/manage/user/list`)
+
+// 添加用户
+export const reqAddUser = (userObj) => myAxiso.post(`${BASE_URL}/manage/user/add`, {...userObj})
+
+// 更新用户
+export const reqUpdateUser = (userObj) => myAxiso.post(`${BASE_URL}/manage/user/update`, {...userObj})
+

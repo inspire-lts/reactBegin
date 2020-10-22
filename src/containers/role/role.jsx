@@ -2,19 +2,25 @@ import React,{Component} from 'react'
 import {Card, Button, Table, message, Modal, Form, Input, Tree} from 'antd'
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
+import {connect} from 'react-redux'
 
-import {reqRoleList, reqAddRole} from '../../api/index'
-const {Item} = Form
+import {reqRoleList, reqAddRole, reqAuthRole} from '../../api/index'
+import menuList from '../../config/menu_config.js'
 
 
 
-export default class Role extends Component{
+
+@connect(
+  state => ({username: state.userInfo.user.username}),
+  {}
+)
+class Role extends Component{
 
   state = {
     isShowAdd: false,
     isShowAuth: false,
     roleList: [],
-   
+    menuList,
     checkedKeys: [],
   
   }
@@ -26,7 +32,7 @@ export default class Role extends Component{
 
   getRoleList = async () => {
     let result = await reqRoleList()
-    const {status, data, msg} = result
+    const {status, data} = result
     if (status === 0) this.setState({roleList: data})
   }
 
@@ -43,7 +49,7 @@ export default class Role extends Component{
 
   onFinish = async values => {
     let result = await reqAddRole(values)
-    const {status, data, msg} = result
+    const {status} = result
     if (status === 0){
       message.success('新增角色成功')
       this.getRoleList()
@@ -58,8 +64,18 @@ export default class Role extends Component{
 
   //  权限
 
-  handleAuthOk = () => {
-    this.setState({isShowAuth: false})
+  handleAuthOk = async() => {
+    const {_id, checkedKeys} = this.state
+    const {username} = this.props
+    let result = await reqAuthRole({_id, menus:checkedKeys, auth_name: username})
+    const {status, data, msg} = result
+    if (status === 0) {
+      message.success('授权成功')
+      this.setState({isShowAuth: false})
+      this.getRoleList()   // 刷新
+    }
+    console.log({_id, menus:checkedKeys, auth_name: username})
+   
 
   }
 
@@ -69,6 +85,18 @@ export default class Role extends Component{
   }
 
 
+
+  // 展示授权弹窗
+  showAuth = (id) => {
+    //回显权限
+    const {roleList} = this.state
+    let result = roleList.find(item => item._id === id)
+    this.setState({checkedKeys: result.menus})
+    // 展开授权弹窗
+    this.setState({isShowAuth: true, _id:id})
+  }
+    
+  
 // tree
   onCheck = (checkedKeys) => {
     console.log('onCheck', checkedKeys);
@@ -109,80 +137,12 @@ export default class Role extends Component{
       {
         title: '操作',
         key: 'option',
-        render: (item) => <Button type='link' onClick={()=>{this.setState({isShowAuth: true})}}>设置权限</Button>
+        render: (item) => <Button type='link' onClick={()=>{this.showAuth(item._id)}}>设置权限</Button>
       }
     ];
 
-    const treeData = [
-      {
-        title: '0-0',
-        key: '0-0',
-        children: [
-          {
-            title: '0-0-0',
-            key: '0-0-0',
-            children: [
-              {
-                title: '0-0-0-0',
-                key: '0-0-0-0',
-              },
-              {
-                title: '0-0-0-1',
-                key: '0-0-0-1',
-              },
-              {
-                title: '0-0-0-2',
-                key: '0-0-0-2',
-              },
-            ],
-          },
-          {
-            title: '0-0-1',
-            key: '0-0-1',
-            children: [
-              {
-                title: '0-0-1-0',
-                key: '0-0-1-0',
-              },
-              {
-                title: '0-0-1-1',
-                key: '0-0-1-1',
-              },
-              {
-                title: '0-0-1-2',
-                key: '0-0-1-2',
-              },
-            ],
-          },
-          {
-            title: '0-0-2',
-            key: '0-0-2',
-          },
-        ],
-      },
-      {
-        title: '0-1',
-        key: '0-1',
-        children: [
-          {
-            title: '0-1-0-0',
-            key: '0-1-0-0',
-          },
-          {
-            title: '0-1-0-1',
-            key: '0-1-0-1',
-          },
-          {
-            title: '0-1-0-2',
-            key: '0-1-0-2',
-          },
-        ],
-      },
-      {
-        title: '0-2',
-        key: '0-2',
-      },
-    ];
+    const treeData =   this.state.menuList
+                      
     
     
     return (
@@ -231,3 +191,5 @@ export default class Role extends Component{
     )
   }
 }
+
+export default Role
